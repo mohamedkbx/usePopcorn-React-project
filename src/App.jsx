@@ -54,10 +54,18 @@ export default function App() {
 
   return (
     <>
-      <Nav movies={movies} />
+      <Nav>
+        <Logo />
+        <SearchBar />
+        <Info movies={movies} />
+      </Nav>
       <Main movies={movies} />
     </>
   );
+}
+
+function Nav({ children }) {
+  return <nav className="nav-bar">{children}</nav>;
 }
 
 function Info({ movies }) {
@@ -87,15 +95,6 @@ function SearchBar() {
       value={query}
       onChange={(e) => setQuery(e.target.value)}
     />
-  );
-}
-function Nav({ movies }) {
-  return (
-    <nav className="nav-bar">
-      <Logo />
-      <SearchBar />
-      <Info movies={movies} />
-    </nav>
   );
 }
 
