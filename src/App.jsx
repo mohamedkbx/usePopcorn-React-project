@@ -54,7 +54,7 @@ export default function App() {
 
   return (
     <>
-      <Nav>
+      <Nav element={<Logo />}>
         <Info movies={movies} />
       </Nav>
       <Main>
@@ -64,10 +64,10 @@ export default function App() {
   );
 }
 
-function Nav({ children }) {
+function Nav({ children, element }) {
   return (
     <nav className="nav-bar">
-      <Logo />
+      {element}
       <SearchBar />
       {children}
     </nav>
