@@ -55,17 +55,23 @@ export default function App() {
   return (
     <>
       <Nav>
-        <Logo />
-        <SearchBar />
         <Info movies={movies} />
       </Nav>
-      <Main movies={movies} />
+      <Main>
+        <MovieList movies={movies} />
+      </Main>
     </>
   );
 }
 
 function Nav({ children }) {
-  return <nav className="nav-bar">{children}</nav>;
+  return (
+    <nav className="nav-bar">
+      <Logo />
+      <SearchBar />
+      {children}
+    </nav>
+  );
 }
 
 function Info({ movies }) {
@@ -106,7 +112,7 @@ function Button({ onClick, children }) {
   );
 }
 
-function Main({ movies }) {
+function Main({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
 
@@ -114,7 +120,7 @@ function Main({ movies }) {
     <main className="main">
       <div className="box">
         <Button onClick={() => setIsOpen1((open) => !open)}>{isOpen1 ? "–" : "+"}</Button>
-        {isOpen1 && <MovieList movies={movies} />}
+        {isOpen1 && children}
       </div>
 
       <div className="box">
