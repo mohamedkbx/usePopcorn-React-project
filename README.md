@@ -22,6 +22,10 @@ Each component adheres to the Single Responsibility Principle (SRP). This means 
 
 We manage complexity by breaking down large components into smaller, more manageable pieces. This approach helps in maintaining a clean and organized codebase, ensuring that each component is easy to understand and work with.
 
+### Prop Drilling
+
+Prop drilling refers to the process of passing data from a parent component to a deeply nested child component through multiple layers of intermediate components. While this approach can be straightforward for small applications, it can become cumbersome and difficult to manage as the application grows. To mitigate the issues associated with prop drilling, consider using state management libraries like Redux or Context API to provide a more efficient way to share data across components.
+
 ## Getting Started
 
 To get started with the UsePopcorn project, follow these steps:
