@@ -32,6 +32,8 @@ We manage complexity by breaking down large components into smaller, more manage
 
 Prop drilling refers to the process of passing data from a parent component to a deeply nested child component through multiple layers of intermediate components. While this approach can be straightforward for small applications, it can become cumbersome and difficult to manage as the application grows. To mitigate the issues associated with prop drilling, consider using state management libraries like Redux or Context API to provide a more efficient way to share data across components.
 
+- also we can solve with Component Composition
+
 ## Getting Started
 
 To get started with the UsePopcorn project, follow these steps:
