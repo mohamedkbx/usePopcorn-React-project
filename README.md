@@ -38,6 +38,10 @@ Prop drilling refers to the process of passing data from a parent component to a
 
 - explicity passing a component as a prop
 
+### Props as API
+
+- good balance of using props in a component
+
 ## Getting Started
 
 To get started with the UsePopcorn project, follow these steps:
