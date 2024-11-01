@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import PropTypes from "prop-types";
 const containerStyle = {
   display: "flex",
   alignItems: "center",
@@ -10,12 +10,14 @@ const starComponentStyle = {
   gap: "3px",
 };
 
-export default function StarRating({
-  maxRating,
-  color = "#fcc419",
-  size = "48",
-  defaultRating = 0,
-}) {
+StarRating.propTypes = {
+  maxRating: PropTypes.number.isRequired,
+  defaultRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+};
+
+export default function StarRating({ maxRating, color = "#fcc419", size = 48, defaultRating = 0 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
   function handleRating(rating) {
