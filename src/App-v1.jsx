@@ -52,8 +52,6 @@ const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
 
-  fetch(`http://www.omdbapi.com/?apikey=${key}&`);
-
   return (
     <>
       <Nav element={<Logo />}>
