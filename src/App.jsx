@@ -49,13 +49,19 @@ import { useEffect, useState } from "react";
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "8db6534e";
+const qurey = "batman";
 export default function App() {
   const [movies, setMovies] = useState([]);
-
-  useEffect(() => {
-    fetch(`http://www.omdbapi.com/?apikey=${KEY}&S=interstellar`)
-      .then((res) => res.json())
-      .then((data) => setMovies(data.Search));
+  const [isloading, setIsLoading] = useState(false);
+  useEffect(function () {
+    async function fetchMovies() {
+      setIsLoading(true);
+      const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&S=${qurey}`);
+      const data = await res.json();
+      setMovies(data.Search);
+    }
+    fetchMovies();
+    setIsLoading(false);
   }, []);
 
   return (
@@ -63,11 +69,13 @@ export default function App() {
       <Nav element={<Logo />}>
         <Info movies={movies} />
       </Nav>
-      <Main>
-        <MovieList movies={movies} />
-      </Main>
+      <Main>{isloading ? <Loader /> : <MovieList movies={movies} />}</Main>
     </>
   );
+}
+
+function Loader() {
+  return <p className="loader"> Loading...</p>;
 }
 
 function Nav({ children, element }) {
