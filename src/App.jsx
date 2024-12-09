@@ -49,32 +49,45 @@ import { useEffect, useState } from "react";
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "8db6534e";
-const qurey = "batman";
+
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&S=${qurey}`);
-        if (!res.ok) throw new Error("Something went wrong");
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("No movies found");
-        setMovies(data.Search);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+  const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState("tt10872600");
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setError("");
+          setIsLoading(true);
+          const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&S=${query}`);
+          if (!res.ok) throw new Error("Something went wrong");
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("No movies found");
+          setMovies(data.Search);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
-    }
-    fetchMovies();
-  }, []);
+      if (query.length < 2) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+
+      fetchMovies();
+    },
+    [query]
+  );
 
   return (
     <>
       <Nav element={<Logo />}>
+        <SearchBar query={query} setQuery={setQuery} />
         <Info movies={movies} />
       </Nav>
       <Main>
@@ -99,7 +112,6 @@ function Nav({ children, element }) {
   return (
     <nav className="nav-bar">
       {element}
-      <SearchBar />
       {children}
     </nav>
   );
@@ -121,9 +133,7 @@ function Logo() {
     </div>
   );
 }
-function SearchBar() {
-  const [query, setQuery] = useState("");
-
+function SearchBar({ query, setQuery }) {
   return (
     <input
       className="search"
