@@ -55,7 +55,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState("tt10872600");
+  const [selectedId, setSelectedId] = useState(null);
   useEffect(
     function () {
       async function fetchMovies() {
@@ -83,16 +83,22 @@ export default function App() {
     },
     [query]
   );
+  function handleSelectedId(id) {
+    setSelectedId((selectedId) => (selectedId === id ? null : id));
+  }
 
+  function onHandleClose() {
+    setSelectedId(null);
+  }
   return (
     <>
       <Nav element={<Logo />}>
         <SearchBar query={query} setQuery={setQuery} />
         <Info movies={movies} />
       </Nav>
-      <Main>
+      <Main selectedId={selectedId} onHandleClose={onHandleClose}>
         {/* {isloading ? <Loader /> : error ? <errorMessage message={error} /> : <MovieList movies={movies} />} */}
-        {!isLoading && !error && <MovieList movies={movies} />}
+        {!isLoading && !error && <MovieList movies={movies} setSelectedId={handleSelectedId} />}
         {isLoading && <Loader />}
         {error && <ErrorMessage message={error} />}
       </Main>
@@ -153,7 +159,7 @@ function Button({ onClick, children }) {
   );
 }
 
-function Main({ children }) {
+function Main({ children, selectedId, onHandleClose }) {
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
 
@@ -165,26 +171,32 @@ function Main({ children }) {
       </div>
 
       <div className="box">
-        <Button onClick={() => setIsOpen2((open) => !open)}>{isOpen2 ? "–" : "+"}</Button>
-        {isOpen2 && <WatchedBox />}
+        {selectedId ? (
+          <MovieDetails selectedId={selectedId} onHandleClose={onHandleClose} />
+        ) : (
+          <>
+            <Button onClick={() => setIsOpen2((open) => !open)}>{isOpen2 ? "–" : "+"}</Button>
+            {isOpen2 && <WatchedBox />}
+          </>
+        )}
       </div>
     </main>
   );
 }
 
-function MovieList({ movies }) {
+function MovieList({ movies, setSelectedId }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
-        <MovieItem key={movie.imdbID} movie={movie} />
+        <MovieItem key={movie.imdbID} movie={movie} setSelectedId={setSelectedId} />
       ))}
     </ul>
   );
 }
 
-function MovieItem({ movie }) {
+function MovieItem({ movie, setSelectedId }) {
   return (
-    <li>
+    <li onClick={() => setSelectedId(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -194,6 +206,17 @@ function MovieItem({ movie }) {
         </p>
       </div>
     </li>
+  );
+}
+
+function MovieDetails({ selectedId, onHandleClose }) {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onHandleClose}>
+        &larr;
+      </button>
+      {selectedId}
+    </div>
   );
 }
 function WatchedBox() {
