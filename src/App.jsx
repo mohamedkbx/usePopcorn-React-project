@@ -25,28 +25,28 @@ import StarRating from "./components/StarRating";
 //   },
 // ];
 
-// const tempWatchedData = [
-//   {
-//     imdbID: "tt1375666",
-//     Title: "Inception",
-//     Year: "2010",
-//     Poster:
-//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-//     runtime: 148,
-//     imdbRating: 8.8,
-//     userRating: 10,
-//   },
-//   {
-//     imdbID: "tt0088763",
-//     Title: "Back to the Future",
-//     Year: "1985",
-//     Poster:
-//       "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-//     runtime: 116,
-//     imdbRating: 8.5,
-//     userRating: 9,
-//   },
-// ];
+const tempWatchedData = [
+  {
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+    runtime: 148,
+    imdbRating: 8.8,
+    userRating: 10,
+  },
+  {
+    imdbID: "tt0088763",
+    Title: "Back to the Future",
+    Year: "1985",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
+    runtime: 116,
+    imdbRating: 8.5,
+    userRating: 9,
+  },
+];
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "8db6534e";
@@ -57,6 +57,8 @@ export default function App() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [watched, setWatched] = useState([]);
+
   useEffect(
     function () {
       async function fetchMovies() {
@@ -91,13 +93,21 @@ export default function App() {
   function onHandleClose() {
     setSelectedId(null);
   }
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
   return (
     <>
       <Nav element={<Logo />}>
         <SearchBar query={query} setQuery={setQuery} />
         <Info movies={movies} />
       </Nav>
-      <Main selectedId={selectedId} onHandleClose={onHandleClose}>
+      <Main
+        selectedId={selectedId}
+        onHandleClose={onHandleClose}
+        watched={watched}
+        onAddWatched={handleAddWatched}
+      >
         {/* {isloading ? <Loader /> : error ? <errorMessage message={error} /> : <MovieList movies={movies} />} */}
         {!isLoading && !error && <MovieList movies={movies} setSelectedId={handleSelectedId} />}
         {isLoading && <Loader />}
@@ -160,7 +170,7 @@ function Button({ onClick, children }) {
   );
 }
 
-function Main({ children, selectedId, onHandleClose }) {
+function Main({ children, selectedId, onHandleClose, watched, onAddWatched }) {
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
 
@@ -173,11 +183,15 @@ function Main({ children, selectedId, onHandleClose }) {
 
       <div className="box">
         {selectedId ? (
-          <MovieDetails selectedId={selectedId} onHandleClose={onHandleClose} />
+          <MovieDetails
+            selectedId={selectedId}
+            onHandleClose={onHandleClose}
+            onAddWatched={onAddWatched}
+          />
         ) : (
           <>
             <Button onClick={() => setIsOpen2((open) => !open)}>{isOpen2 ? "–" : "+"}</Button>
-            {isOpen2 && <WatchedBox />}
+            {isOpen2 && <WatchedBox watched={watched} />}
           </>
         )}
       </div>
@@ -210,12 +224,14 @@ function MovieItem({ movie, setSelectedId }) {
   );
 }
 
-function MovieDetails({ selectedId, onHandleClose }) {
+function MovieDetails({ selectedId, onHandleClose, onAddWatched }) {
   const [movie, setMovie] = useState({});
   const [loading, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState(0);
 
   const {
     Title: title,
+    Year: year,
     Poster: poster,
     Runtime: runtime,
     imdbRating,
@@ -239,6 +255,19 @@ function MovieDetails({ selectedId, onHandleClose }) {
     },
     [selectedId]
   );
+  function handleAdd() {
+    const newWatcedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      userRating: Number(userRating),
+      runtime: runtime.split(" ").at(0),
+    };
+    onAddWatched(newWatcedMovie);
+    onHandleClose();
+  }
 
   return (
     <div className="details">
@@ -265,7 +294,12 @@ function MovieDetails({ selectedId, onHandleClose }) {
           </header>
           <section>
             <div className="rating">
-              <StarRating maxRating={10} size={24} />
+              <StarRating maxRating={10} size={24} onSetRating={setUserRating} />
+              {userRating > 0 && (
+                <button className="btn-add" onClick={handleAdd}>
+                  + Add to List
+                </button>
+              )}
             </div>
             <p>
               <em>{plot}</em>
@@ -278,9 +312,7 @@ function MovieDetails({ selectedId, onHandleClose }) {
     </div>
   );
 }
-function WatchedBox() {
-  const [watched, setWatched] = useState([]);
-
+function WatchedBox({ watched }) {
   return (
     <>
       <Summary watched={watched} />
@@ -300,8 +332,8 @@ function WatchedList({ watched }) {
 function WatchedItem({ movie }) {
   return (
     <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>
