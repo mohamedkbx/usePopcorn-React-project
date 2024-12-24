@@ -135,6 +135,13 @@ body {
   cursor: pointer;
   z-index: 999;
 }
+.movies {
+  overflow: auto;
+}
+
+.movies::-webkit-scrollbar {
+  display: none;
+}
 
 .list {
   list-style: none;
