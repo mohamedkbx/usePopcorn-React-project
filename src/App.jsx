@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./components/StarRating";
 import "./index.css";
 
@@ -121,10 +121,14 @@ function Logo() {
   );
 }
 function SearchBar({ query, setQuery }) {
+  const inputElement = useRef(null);
   useEffect(() => {
-    const searchInput = document.querySelector(".search");
-    searchInput.focus();
-  }, [query]);
+    inputElement.current.focus();
+  });
+  // useEffect(() => {
+  //   const searchInput = document.querySelector(".search");
+  //   searchInput.focus();
+  // }, [query]);
 
   return (
     <input
@@ -133,6 +137,7 @@ function SearchBar({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputElement}
     />
   );
 }
