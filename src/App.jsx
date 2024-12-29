@@ -122,9 +122,20 @@ function Logo() {
 }
 function SearchBar({ query, setQuery }) {
   const inputElement = useRef(null);
+
   useEffect(() => {
-    inputElement.current.focus();
-  });
+    function callBack(e) {
+      if (document.activeElement === inputElement.current) return;
+      if (e.key === "Enter") {
+        inputElement.current.focus();
+        setQuery("");
+      }
+    }
+    document.addEventListener("keydown", callBack);
+    return function () {
+      document.removeEventListener("keydown", callBack);
+    };
+  }, [setQuery]);
   // useEffect(() => {
   //   const searchInput = document.querySelector(".search");
   //   searchInput.focus();
