@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./components/StarRating";
 import { useMovies } from "./hooks/useMovies";
 import "./index.css";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "8db6534e";
@@ -9,12 +10,13 @@ const KEY = "8db6534e";
 export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const [watched, setWatched] = useState(() => JSON.parse(localStorage.getItem("watched")) || []);
-
+  // const [watched, setWatched] = useState(() => JSON.parse(localStorage.getItem("watched")) || []);
   const { movies, isLoading, error } = useMovies(query, onHandleClose);
   function handleSelectedId(id) {
     setSelectedId((selectedId) => (selectedId === id ? null : id));
   }
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   function onHandleClose() {
     setSelectedId(null);
@@ -26,10 +28,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
 
   return (
     <>
@@ -240,21 +238,6 @@ function MovieDetails({ selectedId, onHandleClose, onAddWatched, watched }) {
       };
     },
     [title]
-  );
-
-  useEffect(
-    function () {
-      function callBack(e) {
-        if (e.key === "Escape") {
-          onHandleClose();
-        }
-      }
-      document.addEventListener("keydown", callBack);
-      return function () {
-        document.removeEventListener("keydown", callBack);
-      };
-    },
-    [onHandleClose]
   );
 
   return (
