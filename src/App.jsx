@@ -3,6 +3,7 @@ import StarRating from "./components/StarRating";
 import { useMovies } from "./hooks/useMovies";
 import "./index.css";
 import { useLocalStorageState } from "./hooks/useLocalStorageState";
+import { useKey } from "./hooks/useKey";
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "8db6534e";
@@ -87,19 +88,26 @@ function Logo() {
 function SearchBar({ query, setQuery }) {
   const inputElement = useRef(null);
 
-  useEffect(() => {
-    function callBack(e) {
-      if (document.activeElement === inputElement.current) return;
-      if (e.key === "Enter") {
-        inputElement.current.focus();
-        setQuery("");
-      }
-    }
-    document.addEventListener("keydown", callBack);
-    return function () {
-      document.removeEventListener("keydown", callBack);
-    };
-  }, [setQuery]);
+  useKey("Enter", function () {
+    if (document.activeElement === inputElement.current) return;
+    inputElement.current.focus();
+    setQuery("");
+  });
+
+  // useEffect(() => {
+  //   function callBack(e) {
+  //     if (document.activeElement === inputElement.current) return;
+  //     if (e.key === "Enter") {
+  //       inputElement.current.focus();
+  //       setQuery("");
+  //     }
+  //   }
+  //   document.addEventListener("keydown", callBack);
+  //   return function () {
+  //     document.removeEventListener("keydown", callBack);
+  //   };
+  // }, [setQuery]);
+
   // useEffect(() => {
   //   const searchInput = document.querySelector(".search");
   //   searchInput.focus();
@@ -239,6 +247,8 @@ function MovieDetails({ selectedId, onHandleClose, onAddWatched, watched }) {
     },
     [title]
   );
+
+  useKey("Escape", onHandleClose);
 
   return (
     <div className="details">
